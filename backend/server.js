@@ -1,7 +1,7 @@
 const express = require('express')
 const app = express()
 const socket = require('socket.io')
-const color = require(colors)
+const color = require('colors')
 const cors = require('cors')
 const { get_Current_User, user_Disconnect, join_User } = require('./dummyuser')
 
@@ -20,14 +20,14 @@ const io = socket(server)
 
 //initializing the socket io connection
 io.on('connection', (socket) => {
-  // for a new user joining the room
+  //for a new user joining the room
   socket.on('joinRoom', ({ username, roomname }) => {
     //* create user
     const p_user = join_User(socket.id, username, roomname)
     console.log(socket.id, '=id')
     socket.join(p_user.room)
 
-    // displays a welcome message to the user who have joined a room
+    //display a welcome message to the user who have joined a room
     socket.emit('message', {
       userId: p_user.id,
       username: p_user.username,
@@ -42,8 +42,9 @@ io.on('connection', (socket) => {
     })
   })
 
-  // user sending message
+  //user sending message
   socket.on('chat', (text) => {
+    //gets the room user and the message sent
     const p_user = get_Current_User(socket.id)
 
     io.to(p_user.room).emit('message', {
@@ -53,8 +54,9 @@ io.on('connection', (socket) => {
     })
   })
 
-  // when the userr exites the room
+  //when the user exits the room
   socket.on('disconnect', () => {
+    //the user is deleted from array of users and a left room message displayed
     const p_user = user_Disconnect(socket.id)
 
     if (p_user) {
